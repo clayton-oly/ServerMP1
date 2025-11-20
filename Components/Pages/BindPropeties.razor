@@ -1,5 +1,95 @@
-﻿<h3>BindPropeties</h3>
+﻿@page "/BindProperties"
+@using ServerMP1.DTOs
+
+@*fundamental para funcionar*@
+@rendermode InteractiveServer
+
+<h3>BindProperties</h3>
+<div class="row">
+    @*bind Playground *@
+    <div class="col-6 border p-3 bg-light">
+        <h3>Product - Data Binding Playground</h3>
+        <hr />
+        <ul class="list-unstyled">
+            <li><strong>Id:</strong> @product.Id</li>
+            <li><strong>Name:</strong> <input type="text" @bind-value="@product.Name" @bind-value:event="oninput" /></li>
+            <li><strong>Description:</strong> <input type="text" @bind-value="@product.Description" @bind-value:event="oninput" /></li>
+            <li><strong>Url Imagem:</strong> <img src="@product.UrlImagem" style="width:150px; border-radius:8px; border:1px solid #333;" /></li>
+            <li>
+                <br>
+                @* InputFile para selecionar uma nova imagem *@
+                <InputFile OnChange="OnImageSelected" />
+            </li>
+            <li><strong>Price:</strong> <input type="number" @bind-value="@product.Price" @bind-value:event="oninput" /></li>
+            <li><strong>Stock:</strong> <input type="number" @bind-value="@product.Stock" @bind-value:event="oninput" /></li>
+            <li><strong>IsActive:</strong> <input type="checkbox" @bind="@product.IsActive" /></li>
+            <li>
+                <strong>Category:</strong>
+                <select @bind=@selectedCategory>
+                    @foreach (var cat in product.Categories)
+                    {
+                        <option value="@cat.Name">@cat.Name"</option>
+                    }
+                </select>
+            </li>
+        </ul>
+    </div>
+
+    @*bind Data *@
+    <div class="col-6 border p-3 bg-light">
+        <h3>Product - Data Binding Sumary</h3>
+        <hr />
+        <ul class="list-unstyled">
+            <li><strong>Id:</strong> @product.Id</li>
+            <li><strong>Name:</strong> @product.Name" </li>
+            <li><strong>Description:</strong> @product.Description </li>
+            <li><strong>Url Imagem:</strong> <img src="@product.UrlImagem" style="width:150px; border-radius:8px; border:1px solid #333;" /></li>
+            <li><strong>Price:</strong> @product.Price.ToString("c")</li>
+            <li><strong>Stock:</strong> @product.Stock</li>
+            <li><strong>IsActive:</strong> @(product.IsActive ? "Active" : "Inactive")</li>
+            <li><strong>Category:</strong> @selectedCategory</li>
+        </ul>
+    </div>
+</div>
 
 @code {
+    private string selectedCategory = "";
 
+    DTOs.ProductDTO product = new()
+        {
+            Id = 1,
+            Name = "Product 1",
+            Description = "Description 1",
+            UrlImagem = "https://api-middleware-mcd.mcdonaldscupones.com/media/image/product$kzXv7hw4/200/200/original?country=br",
+            Price = 10.0m,
+            Stock = 100,
+            IsActive = true,
+            Categories = new List<CategoryDTO> {
+                new () { Name = "Lanche" },
+                new () { Name = "Bebida" },
+                new () { Name = "Sobremsa" }
+            },
+        };
+
+    protected override void OnInitialized()
+    {
+        selectedCategory = product.Categories.First().Name;
+    }
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file is null)
+            return;
+
+        using var stream = file.OpenReadStream(maxAllowedSize: 2 * 1024 * 1024);
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+
+        var bytes = ms.ToArray();
+        var base64 = Convert.ToBase64String(bytes);
+
+        product.UrlImagem = $"data:{file.ContentType};base64,{base64}";
+    }
 }
