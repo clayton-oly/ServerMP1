@@ -1,8 +1,9 @@
 ﻿@page "/Detail"
 @using ServerMP1.DTOs
 
-<h3>Detail</h3>
+@rendermode InteractiveServer
 
+<h3>Detail</h3>
 @*Playground*@
 <div class="row">
     <div class="col-12 p-4 bg-light">
@@ -24,7 +25,7 @@
                         <td>@product.Id</td>
                         <td>
                             Name:
-                            <input type="text" @bind-value = "@product.Name" @bind-value:event="oninput"/>
+                            <input type="text" @bind-value="@product.Name" @bind-value:event="oninput" />
                         </td>
                         <td>
                             Price:
@@ -59,16 +60,93 @@
     </div>
 </div>
 
-@*Summary*@
+@* summary *@
 <div class="row">
     <div class="col-12 p-4 bg-light">
-        <h1>Products Sumarry</h1>
-    </div>
-    <ul>
-        <li>
+        <h3>Produts Summary </h3>
 
-        </li>
-    </ul>
+        @*filtro*@
+        <div class="col-2 mb-3">
+            <label class="form-label">Filtrar por categoria: </label>
+            <select class="form-select" @bind="selectCaregoryFiltrer">
+                <option value="">Todas</option>
+                @foreach (var cat in Categories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </select>
+        </div>
+
+        @* //tabela  *@
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name </th>
+                    <th>Price</th>
+                    <th>Stock</th>.
+                    <th>Category</th>
+                    <th>Active</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in FiltrerProducts)
+                {
+                    <tr>
+                        <td>@p.Id				</td>
+                        <td>@p.Name </td>
+                        <td>@p.Price.ToString("c")</td>
+                        <td>@p.Stock</td>
+                        <td>@p.CategoryName</td>
+                        <td>@(p.IsActive ? "Yes" : "No")</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" @onclick="@(() => ShowDetails(p))">Details</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+        @* area de detalhes *@
+        @if (selectedProduct != null)
+        {
+            <div class="card mt-3" style="max-width:400px;">
+                <div class="card-header">
+                    <strong>Details of @selectedProduct.Name</strong>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Id: </strong>@selectedProduct.Id
+                    </p>
+                    <p>
+                        <strong>Description: </strong>  @selectedProduct.Description
+                    </p>
+                    <p>
+                        <strong>Image: </strong>@selectedProduct.Description
+                        <br />
+                        <img src="@selectedProduct.UrlImagem" style="width:200px; border-radius:8px; border:1px solid #000;" alt="Alternate Text" />
+                    </p>
+                    <p>
+                        <strong>Price: </strong>  @selectedProduct.Price.ToString("c")
+                    </p>
+                    <p>
+                        <strong>Stock: </strong>  @selectedProduct.Stock
+                    </p>
+                    <p>
+                        <strong>Active: </strong>  @(selectedProduct.IsActive ? "Yes" : "No")
+                    </p>
+                    <p>
+                        <strong>Categories: </strong>  @selectedProduct.CategoryName
+                    </p>
+
+                </div>
+            </div>
+        }
+
+    </div>
 </div>
 
 @code {
@@ -98,6 +176,14 @@
         };
     }
 
+    //Filtro
+    private string selectCaregoryFiltrer = "";
+
+    //Coleção para filtro
+    private IEnumerable<ProductDTO> FiltrerProducts => string.IsNullOrWhiteSpace(selectCaregoryFiltrer) ? listProductsDTOs
+    : listProductsDTOs.Where(p => p.CategoryName == selectCaregoryFiltrer);
+
+    //Inicializar
     protected override void OnInitialized()
     {
         ProductsList();

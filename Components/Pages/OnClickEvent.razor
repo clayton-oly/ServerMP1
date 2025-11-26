@@ -1,0 +1,87 @@
+﻿@page "/OnClickEvent"
+@using ServerMP1.DTOs
+@rendermode InteractiveServer
+
+
+<h3>OnClickEvent</h3>
+
+@* Playground *@
+<div class="col-12 p-4 bg-light">
+
+    <h3>Products Playground</h3>
+    <div class="row">
+        <div class="col-6 p-4">
+        </div>
+        <div class="col-6 p-4">
+        </div>
+    </div>
+</div>
+
+@* Summary *@
+<div class="col-12 p-4 bg-light">
+    <h3>Products Summary</h3>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Active</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in listProductsDTOs)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@product.Stock</td>
+                    <td>@product.CategoryName</td>
+                    <td>@(product.IsActive ? "Yes" : "No")</td>
+                    <td>
+                        @* <button class="btn btn-primary" @onclick="() => ShowDetails(product)">Details</button> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-6 p-4">
+        </div>
+        <div class="col-6 p-4">
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ProductDTO> listProductsDTOs = new();
+
+    private List<string> Categories = new()
+    {
+        "Lanche",
+        "Bebida",
+        "Sobremesa"
+    };
+
+    private void ProductsList()
+    {
+        //Populando a lista de produtos
+        listProductsDTOs = new List<ProductDTO>
+        {
+            new ProductDTO { Id = 1, Name = "Hambúrguer", Description = "Lanche com Cheddar", UrlImagem="" ,Price = 15.00m, IsActive = true, CategoryName = "Lanche" },
+            new ProductDTO { Id = 2, Name = "Refrigerante",Description = "Coca-Cola", UrlImagem="", Price = 5.00m, IsActive = true, CategoryName = "Bebida" },
+            new ProductDTO { Id = 3, Name = "Sorvete", Description = "De murango tango", UrlImagem="", Price = 7.00m, IsActive = true, CategoryName = "Sobremesa" }
+        };
+    }
+
+    protected override void OnInitialized()
+    {
+        ProductsList();
+    }
+
+}
