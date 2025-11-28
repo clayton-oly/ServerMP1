@@ -11,8 +11,24 @@
     <h3>Products Playground</h3>
     <div class="row">
         <div class="col-6 p-4">
+            <p>Exercicio 1 - Desconto de 10% em todos os produtos</p>
+            <button class="btn btn-warning mb-3" @onclick="ApplydiscountToAll">Aplicar 10% de desconto</button>
+            <hr />
+            <p>Exercicio 2 - Resetar desconto</p>
+            <button class="btn btn-warning mb-3" @onclick="ResetList">Resetar desconto aplicado</button>
         </div>
         <div class="col-6 p-4">
+            <p>Exercicio 3 - Aumentar R$10,00 somente da categoria selecionada</p>
+            <strong>Category:</strong>
+            <select @onchange="SelectedCategory">
+                @foreach (var cat in Categories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </select>
+            <hr />
+            <p>Exercicio 4 - Resetar desconto</p>
+            <button class="btn btn-warning mb-3" @onclick="ResetList">Resetar desconto aplicado</button>
         </div>
     </div>
 </div>
@@ -61,6 +77,29 @@
 @code {
     private List<ProductDTO> listProductsDTOs = new();
 
+    //Exercicio 1 - desconto
+    private void ApplydiscountToAll()
+    {
+        foreach (var p in listProductsDTOs)
+            p.Price = Math.Round(p.Price * 0.9m, 2);
+    }
+
+
+
+    //Exercicio 3 - aumentar R$10,00
+    private void SelectedCategory(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+
+        foreach (var product in listProductsDTOs)
+        {
+            if (product.CategoryName.Equals(selectedValue, StringComparison.OrdinalIgnoreCase))
+            {
+                product.Price = Math.Round(product.Price + 10m, 2);
+            }
+        }
+    }
+
     private List<string> Categories = new()
     {
         "Lanche",
@@ -77,6 +116,13 @@
             new ProductDTO { Id = 2, Name = "Refrigerante",Description = "Coca-Cola", UrlImagem="", Price = 5.00m, IsActive = true, CategoryName = "Bebida" },
             new ProductDTO { Id = 3, Name = "Sorvete", Description = "De murango tango", UrlImagem="", Price = 7.00m, IsActive = true, CategoryName = "Sobremesa" }
         };
+    }
+
+    //Exercicio 2 - reset
+    private void ResetList()
+    {
+        listProductsDTOs.Clear();
+        ProductsList();
     }
 
     protected override void OnInitialized()
