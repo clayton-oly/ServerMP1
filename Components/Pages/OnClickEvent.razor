@@ -26,9 +26,6 @@
                     <option value="@cat">@cat</option>
                 }
             </select>
-            <hr />
-            <p>Exercicio 4 - Resetar desconto</p>
-            <button class="btn btn-warning mb-3" @onclick="ResetList">Resetar desconto aplicado</button>
         </div>
     </div>
 </div>
@@ -45,7 +42,7 @@
                 <th>Stock</th>
                 <th>Category</th>
                 <th>Active</th>
-                <th></th>
+                <th>Favoritar</th>
             </tr>
         </thead>
         <tbody>
@@ -59,7 +56,10 @@
                     <td>@product.CategoryName</td>
                     <td>@(product.IsActive ? "Yes" : "No")</td>
                     <td>
-                        @* <button class="btn btn-primary" @onclick="() => ShowDetails(product)">Details</button> *@
+                        <span style="cursor: pointer; font-size: 22px;"
+                              @onclick="() => Favoritar(product)">
+                            @(product.IsFavorite ? "★" : "☆")
+                        </span>
                     </td>
                 </tr>
             }
@@ -123,6 +123,11 @@
     {
         listProductsDTOs.Clear();
         ProductsList();
+    }
+
+    private void Favoritar(ProductDTO product)
+    {
+        product.IsFavorite = !product.IsFavorite;
     }
 
     protected override void OnInitialized()
